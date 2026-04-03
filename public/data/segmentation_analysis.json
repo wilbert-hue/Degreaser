@@ -1,13 +1,14 @@
 {
   "Global": {
     "By Product Type": {
-      "Solvent-Based Degreasers": {},
-      "Water-Based Degreasers": {},
-      "Bio-Based / Green Degreasers": {},
-      "Specialty Degreasers": {},
       "Alkaline Degreasers": {},
-      "Acid-Based Degreasers": {},
-      "Others (Enzymatic degreasers, etc.)": {}
+      "Solvent / Hydrocarbon-Based Degreasers": {},
+      "Water-Based Degreasers": {},
+      "Oil Dispersants / Spill Treatment Cleaners": {},
+      "Workshop / Hand Degreasers": {},
+      "Specialty Industrial Degreasers": {},
+      "Bio-Based / Green Degreasers": {},
+      "Others": {}
     },
     "By Cleaning Strength": {
       "Light-duty degreasers": {},
@@ -22,6 +23,7 @@
       "Powder concentrates": {}
     },
     "By Application Method": {
+      "Manual / Wipe-on / Scrub Application": {},
       "Spray Application": {},
       "Immersion/Soaking": {},
       "Pressure Washing": {},
@@ -29,12 +31,13 @@
       "Foam Application": {}
     },
     "By End-Use Industry": {
-      "Automotive": {},
+      "Automotive & Workshops": {},
       "Manufacturing/Metalworking": {},
       "Food Processing": {},
-      "Aerospace": {},
-      "Marine": {},
-      "Others (Electronics, Oil & Gas, etc.)": {}
+      "Hospitality, Institutional & Facility Cleaning": {},
+      "Marine / Transport / Logistics": {},
+      "Oil & Gas / Heavy Industry": {},
+      "Others (Electronics, etc.)": {}
     },
     "By Distribution Channel": {
       "Direct sales": {},
@@ -43,9 +46,26 @@
     },
     "By Region": {
       "Africa": {
-        "North Africa": {},
-        "South Africa": {},
-        "Central Africa": {}
+        "North Africa": {
+          "Egypt": {},
+          "Morocco": {},
+          "Rest of North Africa": {}
+        },
+        "Central Africa": {
+          "Democratic Republic of Congo": {},
+          "Cameroon": {},
+          "Rest of Central Africa": {}
+        },
+        "Southern Africa": {
+          "South Africa": {},
+          "Zambia": {},
+          "Rest of Southern Africa": {}
+        },
+        "East Africa": {
+          "Kenya": {},
+          "Tanzania": {},
+          "Rest of East Africa": {}
+        }
       }
     }
   }

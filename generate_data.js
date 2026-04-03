@@ -4,21 +4,29 @@ const path = require('path');
 // Years: 2021-2033
 const years = [2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033];
 
-// Geographies - Africa only with sub-regions
+// Geographies - Africa with sub-regions and countries
 const regions = {
-  "Africa": ["North Africa", "South Africa", "Central Africa"]
+  "Africa": ["North Africa", "Central Africa", "Southern Africa", "East Africa"]
+};
+
+const subRegionCountries = {
+  "North Africa": ["Egypt", "Morocco", "Rest of North Africa"],
+  "Central Africa": ["Democratic Republic of Congo", "Cameroon", "Rest of Central Africa"],
+  "Southern Africa": ["South Africa", "Zambia", "Rest of Southern Africa"],
+  "East Africa": ["Kenya", "Tanzania", "Rest of East Africa"]
 };
 
 // New segment definitions for Degreaser market
 const segmentTypes = {
   "By Product Type": {
-    "Solvent-Based Degreasers": 0.28,
-    "Water-Based Degreasers": 0.24,
-    "Bio-Based / Green Degreasers": 0.12,
-    "Specialty Degreasers": 0.10,
-    "Alkaline Degreasers": 0.12,
-    "Acid-Based Degreasers": 0.08,
-    "Others (Enzymatic degreasers, etc.)": 0.06
+    "Alkaline Degreasers": 0.20,
+    "Solvent / Hydrocarbon-Based Degreasers": 0.22,
+    "Water-Based Degreasers": 0.18,
+    "Oil Dispersants / Spill Treatment Cleaners": 0.10,
+    "Workshop / Hand Degreasers": 0.12,
+    "Specialty Industrial Degreasers": 0.08,
+    "Bio-Based / Green Degreasers": 0.06,
+    "Others": 0.04
   },
   "By Cleaning Strength": {
     "Light-duty degreasers": 0.30,
@@ -33,19 +41,21 @@ const segmentTypes = {
     "Powder concentrates": 0.13
   },
   "By Application Method": {
-    "Spray Application": 0.30,
-    "Immersion/Soaking": 0.22,
-    "Pressure Washing": 0.20,
-    "Ultrasonic Cleaning": 0.13,
-    "Foam Application": 0.15
+    "Manual / Wipe-on / Scrub Application": 0.18,
+    "Spray Application": 0.25,
+    "Immersion/Soaking": 0.18,
+    "Pressure Washing": 0.17,
+    "Ultrasonic Cleaning": 0.10,
+    "Foam Application": 0.12
   },
   "By End-Use Industry": {
-    "Automotive": 0.28,
-    "Manufacturing/Metalworking": 0.25,
-    "Food Processing": 0.18,
-    "Aerospace": 0.10,
-    "Marine": 0.08,
-    "Others (Electronics, Oil & Gas, etc.)": 0.11
+    "Automotive & Workshops": 0.22,
+    "Manufacturing/Metalworking": 0.20,
+    "Food Processing": 0.15,
+    "Hospitality, Institutional & Facility Cleaning": 0.14,
+    "Marine / Transport / Logistics": 0.10,
+    "Oil & Gas / Heavy Industry": 0.11,
+    "Others (Electronics, etc.)": 0.08
   },
   "By Distribution Channel": {
     "Direct sales": 0.40,
@@ -61,25 +71,38 @@ const regionBaseValues = {
 };
 
 // Sub-region share within Africa
-const countryShares = {
-  "Africa": { "North Africa": 0.45, "South Africa": 0.30, "Central Africa": 0.25 }
+const subRegionShares = {
+  "Africa": { "North Africa": 0.35, "Central Africa": 0.15, "Southern Africa": 0.30, "East Africa": 0.20 }
 };
 
-// Growth rates (CAGR) per region
+// Country share within sub-region
+const countryShares = {
+  "North Africa": { "Egypt": 0.45, "Morocco": 0.30, "Rest of North Africa": 0.25 },
+  "Central Africa": { "Democratic Republic of Congo": 0.40, "Cameroon": 0.35, "Rest of Central Africa": 0.25 },
+  "Southern Africa": { "South Africa": 0.55, "Zambia": 0.20, "Rest of Southern Africa": 0.25 },
+  "East Africa": { "Kenya": 0.45, "Tanzania": 0.30, "Rest of East Africa": 0.25 }
+};
+
+// Growth rates (CAGR) per sub-region
 const regionGrowthRates = {
-  "Africa": 0.082
+  "Africa": 0.082,
+  "North Africa": 0.078,
+  "Central Africa": 0.095,
+  "Southern Africa": 0.080,
+  "East Africa": 0.092
 };
 
 // Segment-specific growth multipliers (relative to regional base CAGR)
 const segmentGrowthMultipliers = {
   "By Product Type": {
-    "Solvent-Based Degreasers": 0.88,
-    "Water-Based Degreasers": 1.12,
-    "Bio-Based / Green Degreasers": 1.35,
-    "Specialty Degreasers": 1.15,
     "Alkaline Degreasers": 0.95,
-    "Acid-Based Degreasers": 0.90,
-    "Others (Enzymatic degreasers, etc.)": 1.20
+    "Solvent / Hydrocarbon-Based Degreasers": 0.88,
+    "Water-Based Degreasers": 1.12,
+    "Oil Dispersants / Spill Treatment Cleaners": 1.08,
+    "Workshop / Hand Degreasers": 1.05,
+    "Specialty Industrial Degreasers": 1.15,
+    "Bio-Based / Green Degreasers": 1.35,
+    "Others": 1.00
   },
   "By Cleaning Strength": {
     "Light-duty degreasers": 0.92,
@@ -94,6 +117,7 @@ const segmentGrowthMultipliers = {
     "Powder concentrates": 0.90
   },
   "By Application Method": {
+    "Manual / Wipe-on / Scrub Application": 0.90,
     "Spray Application": 1.05,
     "Immersion/Soaking": 0.95,
     "Pressure Washing": 1.02,
@@ -101,12 +125,13 @@ const segmentGrowthMultipliers = {
     "Foam Application": 1.08
   },
   "By End-Use Industry": {
-    "Automotive": 1.05,
+    "Automotive & Workshops": 1.05,
     "Manufacturing/Metalworking": 1.08,
     "Food Processing": 1.12,
-    "Aerospace": 1.15,
-    "Marine": 0.92,
-    "Others (Electronics, Oil & Gas, etc.)": 1.10
+    "Hospitality, Institutional & Facility Cleaning": 1.10,
+    "Marine / Transport / Logistics": 0.95,
+    "Oil & Gas / Heavy Industry": 1.06,
+    "Others (Electronics, etc.)": 1.02
   },
   "By Distribution Channel": {
     "Direct sales": 0.95,
@@ -115,7 +140,7 @@ const segmentGrowthMultipliers = {
   }
 };
 
-// Volume multiplier: units (Kilotons) per USD Million
+// Volume multiplier: units (Tons) per USD Million
 const volumePerMillionUSD = 120;
 
 // Seeded pseudo-random for reproducibility
@@ -152,12 +177,12 @@ function generateData(isVolume) {
   const roundFn = isVolume ? roundToInt : roundTo1;
   const multiplier = isVolume ? volumePerMillionUSD : 1;
 
-  // Generate data for each region and sub-region
+  // Generate data for Africa (top level)
   for (const [regionName, subRegions] of Object.entries(regions)) {
     const regionBase = regionBaseValues[regionName] * multiplier;
     const regionGrowth = regionGrowthRates[regionName];
 
-    // Region-level data
+    // Africa-level data with all segment types
     data[regionName] = {};
     for (const [segType, segments] of Object.entries(segmentTypes)) {
       data[regionName][segType] = {};
@@ -168,31 +193,62 @@ function generateData(isVolume) {
       }
     }
 
-    // Add "By Country" for each region
+    // Add "By Country" at Africa level (sub-regions as "countries")
     data[regionName]["By Country"] = {};
     for (const subRegion of subRegions) {
-      const cShare = countryShares[regionName][subRegion];
-      const subRegionGrowthVariation = 1 + (seededRandom() - 0.5) * 0.06;
-      const subRegionBase = regionBase * cShare;
-      const subRegionGrowth = regionGrowth * subRegionGrowthVariation;
-      data[regionName]["By Country"][subRegion] = generateTimeSeries(subRegionBase, subRegionGrowth, roundFn);
+      const srShare = subRegionShares[regionName][subRegion];
+      const srGrowthVariation = 1 + (seededRandom() - 0.5) * 0.06;
+      const srBase = regionBase * srShare;
+      const srGrowth = regionGrowth * srGrowthVariation;
+      data[regionName]["By Country"][subRegion] = generateTimeSeries(srBase, srGrowth, roundFn);
     }
 
-    // Sub-region-level data
+    // Sub-region level data (North Africa, Central Africa, etc.)
     for (const subRegion of subRegions) {
-      const cShare = countryShares[regionName][subRegion];
-      const subRegionBase = regionBase * cShare;
-      const subRegionGrowthVariation = 1 + (seededRandom() - 0.5) * 0.04;
-      const subRegionGrowth = regionGrowth * subRegionGrowthVariation;
+      const srShare = subRegionShares[regionName][subRegion];
+      const srBase = regionBase * srShare;
+      const srGrowth = regionGrowthRates[subRegion] || regionGrowth;
 
       data[subRegion] = {};
       for (const [segType, segments] of Object.entries(segmentTypes)) {
         data[subRegion][segType] = {};
         for (const [segName, share] of Object.entries(segments)) {
-          const segGrowth = subRegionGrowth * segmentGrowthMultipliers[segType][segName];
-          const segBase = subRegionBase * share;
+          const segGrowth = srGrowth * segmentGrowthMultipliers[segType][segName];
+          const segBase = srBase * share;
           const shareVariation = 1 + (seededRandom() - 0.5) * 0.1;
           data[subRegion][segType][segName] = generateTimeSeries(segBase * shareVariation, segGrowth, roundFn);
+        }
+      }
+
+      // Add "By Country" for each sub-region
+      const countries = subRegionCountries[subRegion];
+      if (countries) {
+        data[subRegion]["By Country"] = {};
+        for (const country of countries) {
+          const cShare = countryShares[subRegion][country];
+          const cGrowthVariation = 1 + (seededRandom() - 0.5) * 0.06;
+          const cBase = srBase * cShare;
+          const cGrowth = srGrowth * cGrowthVariation;
+          data[subRegion]["By Country"][country] = generateTimeSeries(cBase, cGrowth, roundFn);
+        }
+
+        // Country-level data
+        for (const country of countries) {
+          const cShare = countryShares[subRegion][country];
+          const cBase = srBase * cShare;
+          const cGrowthVariation = 1 + (seededRandom() - 0.5) * 0.04;
+          const cGrowth = srGrowth * cGrowthVariation;
+
+          data[country] = {};
+          for (const [segType, segments] of Object.entries(segmentTypes)) {
+            data[country][segType] = {};
+            for (const [segName, share] of Object.entries(segments)) {
+              const segGrowth = cGrowth * segmentGrowthMultipliers[segType][segName];
+              const segBase = cBase * share;
+              const shareVariation = 1 + (seededRandom() - 0.5) * 0.1;
+              data[country][segType][segName] = generateTimeSeries(segBase * shareVariation, segGrowth, roundFn);
+            }
+          }
         }
       }
     }
@@ -213,7 +269,6 @@ fs.writeFileSync(path.join(outDir, 'value.json'), JSON.stringify(valueData, null
 fs.writeFileSync(path.join(outDir, 'volume.json'), JSON.stringify(volumeData, null, 2));
 
 console.log('Generated value.json and volume.json successfully');
-console.log('Value geographies:', Object.keys(valueData).length);
-console.log('Volume geographies:', Object.keys(volumeData).length);
+console.log('Value geographies:', Object.keys(valueData));
+console.log('Volume geographies:', Object.keys(volumeData));
 console.log('Segment types:', Object.keys(valueData['Africa']));
-console.log('Sample - Africa, By Product Type:', JSON.stringify(valueData['Africa']['By Product Type'], null, 2));
