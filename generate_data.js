@@ -4,101 +4,119 @@ const path = require('path');
 // Years: 2021-2033
 const years = [2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033];
 
-// Geographies with their region grouping
+// Geographies - Africa only with sub-regions
 const regions = {
-  "North America": ["U.S.", "Canada"],
-  "Europe": ["U.K.", "Germany", "Italy", "France", "Spain", "Russia", "Rest of Europe"],
-  "Asia Pacific": ["China", "India", "Japan", "South Korea", "ASEAN", "Australia", "Rest of Asia Pacific"],
-  "Latin America": ["Brazil", "Argentina", "Mexico", "Rest of Latin America"],
-  "Middle East & Africa": ["GCC", "South Africa", "Rest of Middle East & Africa"]
+  "Africa": ["North Africa", "South Africa", "Central Africa"]
 };
 
-// New segment definitions with market share splits (proportions within each segment type)
+// New segment definitions for Degreaser market
 const segmentTypes = {
-  "By Type": {
-    "Sub-Normothermic Perfusion (20–34°C)": 0.55,
-    "Warm or Normothermic Perfusion (35–37°C)": 0.45
+  "By Product Type": {
+    "Solvent-Based Degreasers": 0.28,
+    "Water-Based Degreasers": 0.24,
+    "Bio-Based / Green Degreasers": 0.12,
+    "Specialty Degreasers": 0.10,
+    "Alkaline Degreasers": 0.12,
+    "Acid-Based Degreasers": 0.08,
+    "Others (Enzymatic degreasers, etc.)": 0.06
   },
-  "By Organ Type": {
-    "Liver": 0.35,
-    "Heart": 0.22,
-    "Lung": 0.18,
-    "Kidney": 0.15,
-    "Others (Pancreas, Small bowel / Intestine, Composite Tissues / Limb Perfusion (emerging use cases))": 0.10
+  "By Cleaning Strength": {
+    "Light-duty degreasers": 0.30,
+    "Medium-duty degreasers": 0.42,
+    "Heavy-duty degreasers": 0.28
   },
-  "Application / Use Case": {
-    "Organ Preservation": 0.30,
-    "Viability Assessment": 0.25,
-    "Physiologic Transport": 0.20,
-    "Reconditioning Marginal Organs": 0.15,
-    "Others (Research Use / Protocol development)": 0.10
+  "By Physical Form": {
+    "Liquid degreasers": 0.38,
+    "Gel degreasers": 0.12,
+    "Aerosol / spray degreasers": 0.22,
+    "Foam-based degreasers": 0.15,
+    "Powder concentrates": 0.13
   },
-  "By End User": {
-    "Hospitals & Clinics": 0.40,
-    "Specialty Clinic/Centers": 0.25,
-    "Transplant Centers": 0.25,
-    "Others (Research Institutes/Centers, Organ Procurement Organizations, etc.)": 0.10
+  "By Application Method": {
+    "Spray Application": 0.30,
+    "Immersion/Soaking": 0.22,
+    "Pressure Washing": 0.20,
+    "Ultrasonic Cleaning": 0.13,
+    "Foam Application": 0.15
+  },
+  "By End-Use Industry": {
+    "Automotive": 0.28,
+    "Manufacturing/Metalworking": 0.25,
+    "Food Processing": 0.18,
+    "Aerospace": 0.10,
+    "Marine": 0.08,
+    "Others (Electronics, Oil & Gas, etc.)": 0.11
+  },
+  "By Distribution Channel": {
+    "Direct sales": 0.40,
+    "Indirect Sales (via distributors)": 0.38,
+    "Online / e-commerce platforms": 0.22
   }
 };
 
 // Regional base values (USD Million) for 2021 - total market per region
-// Global Normothermic Machine Perfusion market ~$300M in 2021, growing ~12% CAGR
+// Africa Degreaser market ~$850M in 2021, growing ~8% CAGR
 const regionBaseValues = {
-  "North America": 120,
-  "Europe": 90,
-  "Asia Pacific": 50,
-  "Latin America": 20,
-  "Middle East & Africa": 15
+  "Africa": 850
 };
 
-// Country share within region (must sum to ~1.0)
+// Sub-region share within Africa
 const countryShares = {
-  "North America": { "U.S.": 0.82, "Canada": 0.18 },
-  "Europe": { "U.K.": 0.18, "Germany": 0.22, "Italy": 0.12, "France": 0.16, "Spain": 0.10, "Russia": 0.08, "Rest of Europe": 0.14 },
-  "Asia Pacific": { "China": 0.28, "India": 0.12, "Japan": 0.25, "South Korea": 0.12, "ASEAN": 0.10, "Australia": 0.07, "Rest of Asia Pacific": 0.06 },
-  "Latin America": { "Brazil": 0.45, "Argentina": 0.15, "Mexico": 0.25, "Rest of Latin America": 0.15 },
-  "Middle East & Africa": { "GCC": 0.45, "South Africa": 0.25, "Rest of Middle East & Africa": 0.30 }
+  "Africa": { "North Africa": 0.45, "South Africa": 0.30, "Central Africa": 0.25 }
 };
 
-// Growth rates (CAGR) per region - slightly different for variety
+// Growth rates (CAGR) per region
 const regionGrowthRates = {
-  "North America": 0.115,
-  "Europe": 0.108,
-  "Asia Pacific": 0.145,
-  "Latin America": 0.125,
-  "Middle East & Africa": 0.118
+  "Africa": 0.082
 };
 
 // Segment-specific growth multipliers (relative to regional base CAGR)
 const segmentGrowthMultipliers = {
-  "By Type": {
-    "Sub-Normothermic Perfusion (20–34°C)": 0.95,
-    "Warm or Normothermic Perfusion (35–37°C)": 1.07
+  "By Product Type": {
+    "Solvent-Based Degreasers": 0.88,
+    "Water-Based Degreasers": 1.12,
+    "Bio-Based / Green Degreasers": 1.35,
+    "Specialty Degreasers": 1.15,
+    "Alkaline Degreasers": 0.95,
+    "Acid-Based Degreasers": 0.90,
+    "Others (Enzymatic degreasers, etc.)": 1.20
   },
-  "By Organ Type": {
-    "Liver": 1.08,
-    "Heart": 1.05,
-    "Lung": 1.12,
-    "Kidney": 0.95,
-    "Others (Pancreas, Small bowel / Intestine, Composite Tissues / Limb Perfusion (emerging use cases))": 1.20
+  "By Cleaning Strength": {
+    "Light-duty degreasers": 0.92,
+    "Medium-duty degreasers": 1.02,
+    "Heavy-duty degreasers": 1.08
   },
-  "Application / Use Case": {
-    "Organ Preservation": 0.92,
-    "Viability Assessment": 1.15,
-    "Physiologic Transport": 1.05,
-    "Reconditioning Marginal Organs": 1.18,
-    "Others (Research Use / Protocol development)": 1.10
+  "By Physical Form": {
+    "Liquid degreasers": 0.95,
+    "Gel degreasers": 1.10,
+    "Aerosol / spray degreasers": 1.08,
+    "Foam-based degreasers": 1.15,
+    "Powder concentrates": 0.90
   },
-  "By End User": {
-    "Hospitals & Clinics": 0.98,
-    "Specialty Clinic/Centers": 1.10,
-    "Transplant Centers": 1.08,
-    "Others (Research Institutes/Centers, Organ Procurement Organizations, etc.)": 1.05
+  "By Application Method": {
+    "Spray Application": 1.05,
+    "Immersion/Soaking": 0.95,
+    "Pressure Washing": 1.02,
+    "Ultrasonic Cleaning": 1.18,
+    "Foam Application": 1.08
+  },
+  "By End-Use Industry": {
+    "Automotive": 1.05,
+    "Manufacturing/Metalworking": 1.08,
+    "Food Processing": 1.12,
+    "Aerospace": 1.15,
+    "Marine": 0.92,
+    "Others (Electronics, Oil & Gas, etc.)": 1.10
+  },
+  "By Distribution Channel": {
+    "Direct sales": 0.95,
+    "Indirect Sales (via distributors)": 0.98,
+    "Online / e-commerce platforms": 1.25
   }
 };
 
-// Volume multiplier: units per USD Million (rough: ~500 units per $1M for perfusion devices)
-const volumePerMillionUSD = 480;
+// Volume multiplier: units (Kilotons) per USD Million
+const volumePerMillionUSD = 120;
 
 // Seeded pseudo-random for reproducibility
 let seed = 42;
@@ -134,8 +152,8 @@ function generateData(isVolume) {
   const roundFn = isVolume ? roundToInt : roundTo1;
   const multiplier = isVolume ? volumePerMillionUSD : 1;
 
-  // Generate data for each region and country
-  for (const [regionName, countries] of Object.entries(regions)) {
+  // Generate data for each region and sub-region
+  for (const [regionName, subRegions] of Object.entries(regions)) {
     const regionBase = regionBaseValues[regionName] * multiplier;
     const regionGrowth = regionGrowthRates[regionName];
 
@@ -152,31 +170,29 @@ function generateData(isVolume) {
 
     // Add "By Country" for each region
     data[regionName]["By Country"] = {};
-    for (const country of countries) {
-      const cShare = countryShares[regionName][country];
-      // Use a slight variation of region growth per country
-      const countryGrowthVariation = 1 + (seededRandom() - 0.5) * 0.06;
-      const countryBase = regionBase * cShare;
-      const countryGrowth = regionGrowth * countryGrowthVariation;
-      data[regionName]["By Country"][country] = generateTimeSeries(countryBase, countryGrowth, roundFn);
+    for (const subRegion of subRegions) {
+      const cShare = countryShares[regionName][subRegion];
+      const subRegionGrowthVariation = 1 + (seededRandom() - 0.5) * 0.06;
+      const subRegionBase = regionBase * cShare;
+      const subRegionGrowth = regionGrowth * subRegionGrowthVariation;
+      data[regionName]["By Country"][subRegion] = generateTimeSeries(subRegionBase, subRegionGrowth, roundFn);
     }
 
-    // Country-level data
-    for (const country of countries) {
-      const cShare = countryShares[regionName][country];
-      const countryBase = regionBase * cShare;
-      const countryGrowthVariation = 1 + (seededRandom() - 0.5) * 0.04;
-      const countryGrowth = regionGrowth * countryGrowthVariation;
+    // Sub-region-level data
+    for (const subRegion of subRegions) {
+      const cShare = countryShares[regionName][subRegion];
+      const subRegionBase = regionBase * cShare;
+      const subRegionGrowthVariation = 1 + (seededRandom() - 0.5) * 0.04;
+      const subRegionGrowth = regionGrowth * subRegionGrowthVariation;
 
-      data[country] = {};
+      data[subRegion] = {};
       for (const [segType, segments] of Object.entries(segmentTypes)) {
-        data[country][segType] = {};
+        data[subRegion][segType] = {};
         for (const [segName, share] of Object.entries(segments)) {
-          const segGrowth = countryGrowth * segmentGrowthMultipliers[segType][segName];
-          const segBase = countryBase * share;
-          // Add slight country-specific variation to segment share
+          const segGrowth = subRegionGrowth * segmentGrowthMultipliers[segType][segName];
+          const segBase = subRegionBase * share;
           const shareVariation = 1 + (seededRandom() - 0.5) * 0.1;
-          data[country][segType][segName] = generateTimeSeries(segBase * shareVariation, segGrowth, roundFn);
+          data[subRegion][segType][segName] = generateTimeSeries(segBase * shareVariation, segGrowth, roundFn);
         }
       }
     }
@@ -199,5 +215,5 @@ fs.writeFileSync(path.join(outDir, 'volume.json'), JSON.stringify(volumeData, nu
 console.log('Generated value.json and volume.json successfully');
 console.log('Value geographies:', Object.keys(valueData).length);
 console.log('Volume geographies:', Object.keys(volumeData).length);
-console.log('Segment types:', Object.keys(valueData['North America']));
-console.log('Sample - North America, By Type:', JSON.stringify(valueData['North America']['By Type'], null, 2));
+console.log('Segment types:', Object.keys(valueData['Africa']));
+console.log('Sample - Africa, By Product Type:', JSON.stringify(valueData['Africa']['By Product Type'], null, 2));

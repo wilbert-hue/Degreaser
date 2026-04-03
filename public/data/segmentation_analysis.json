@@ -1,62 +1,51 @@
 {
   "Global": {
-    "By Type": {
-      "Sub-Normothermic Perfusion (20–34°C)": {},
-      "Warm or Normothermic Perfusion (35–37°C)": {}
+    "By Product Type": {
+      "Solvent-Based Degreasers": {},
+      "Water-Based Degreasers": {},
+      "Bio-Based / Green Degreasers": {},
+      "Specialty Degreasers": {},
+      "Alkaline Degreasers": {},
+      "Acid-Based Degreasers": {},
+      "Others (Enzymatic degreasers, etc.)": {}
     },
-    "By Organ Type": {
-      "Liver": {},
-      "Heart": {},
-      "Lung": {},
-      "Kidney": {},
-      "Others (Pancreas, Small bowel / Intestine, Composite Tissues / Limb Perfusion (emerging use cases))": {}
+    "By Cleaning Strength": {
+      "Light-duty degreasers": {},
+      "Medium-duty degreasers": {},
+      "Heavy-duty degreasers": {}
     },
-    "Application / Use Case": {
-      "Organ Preservation": {},
-      "Viability Assessment": {},
-      "Physiologic Transport": {},
-      "Reconditioning Marginal Organs": {},
-      "Others (Research Use / Protocol development)": {}
+    "By Physical Form": {
+      "Liquid degreasers": {},
+      "Gel degreasers": {},
+      "Aerosol / spray degreasers": {},
+      "Foam-based degreasers": {},
+      "Powder concentrates": {}
     },
-    "By End User": {
-      "Hospitals & Clinics": {},
-      "Specialty Clinic/Centers": {},
-      "Transplant Centers": {},
-      "Others (Research Institutes/Centers, Organ Procurement Organizations, etc.)": {}
+    "By Application Method": {
+      "Spray Application": {},
+      "Immersion/Soaking": {},
+      "Pressure Washing": {},
+      "Ultrasonic Cleaning": {},
+      "Foam Application": {}
+    },
+    "By End-Use Industry": {
+      "Automotive": {},
+      "Manufacturing/Metalworking": {},
+      "Food Processing": {},
+      "Aerospace": {},
+      "Marine": {},
+      "Others (Electronics, Oil & Gas, etc.)": {}
+    },
+    "By Distribution Channel": {
+      "Direct sales": {},
+      "Indirect Sales (via distributors)": {},
+      "Online / e-commerce platforms": {}
     },
     "By Region": {
-      "North America": {
-        "U.S.": {},
-        "Canada": {}
-      },
-      "Europe": {
-        "U.K.": {},
-        "Germany": {},
-        "Italy": {},
-        "France": {},
-        "Spain": {},
-        "Russia": {},
-        "Rest of Europe": {}
-      },
-      "Asia Pacific": {
-        "China": {},
-        "India": {},
-        "Japan": {},
-        "South Korea": {},
-        "ASEAN": {},
-        "Australia": {},
-        "Rest of Asia Pacific": {}
-      },
-      "Latin America": {
-        "Brazil": {},
-        "Argentina": {},
-        "Mexico": {},
-        "Rest of Latin America": {}
-      },
-      "Middle East & Africa": {
-        "GCC": {},
+      "Africa": {
+        "North Africa": {},
         "South Africa": {},
-        "Rest of Middle East & Africa": {}
+        "Central Africa": {}
       }
     }
   }
