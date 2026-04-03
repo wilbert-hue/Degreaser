@@ -29,19 +29,20 @@ export function GeographyMultiSelect() {
   }, [isOpen])
 
   // Build hierarchical geography structure
-  const { globalItems, regions, countries, hasHierarchy, flatOptions } = useMemo(() => {
+  const { globalItems, regions, countries, subRegionCountries, hasHierarchy, flatOptions } = useMemo(() => {
     if (!data || !data.dimensions?.geographies) {
-      return { globalItems: [], regions: [], countries: {} as Record<string, string[]>, hasHierarchy: false, flatOptions: [] }
+      return { globalItems: [], regions: [], countries: {} as Record<string, string[]>, subRegionCountries: {} as Record<string, string[]>, hasHierarchy: false, flatOptions: [] }
     }
 
     const geo = data.dimensions.geographies
     const globalItems = geo.global || []
     const regions = geo.regions || []
     const countries = geo.countries || {}
+    const subRegionCountries = geo.subRegionCountries || {}
     const hasHierarchy = regions.length > 0
     const flatOptions = geo.all_geographies || []
 
-    return { globalItems, regions, countries, hasHierarchy, flatOptions }
+    return { globalItems, regions, countries, subRegionCountries, hasHierarchy, flatOptions }
   }, [data])
 
   // Filter items based on search
@@ -106,18 +107,18 @@ export function GeographyMultiSelect() {
     </label>
   )
 
-  const renderRegion = (region: string) => {
-    const regionCountries = countries[region] || []
-    const isExpanded = expandedRegions.has(region)
-    const hasCountries = regionCountries.length > 0
+  const renderExpandableItem = (item: string, children: string[], indent: number, fontWeight: string = 'font-medium') => {
+    const isExpanded = expandedRegions.has(item)
+    const hasChildren = children.length > 0
 
     return (
-      <div key={region}>
+      <div key={item}>
         <div className="flex items-center hover:bg-blue-50">
-          {hasCountries && (
+          {hasChildren && (
             <button
-              onClick={(e) => { e.stopPropagation(); toggleRegionExpand(region) }}
-              className="p-1 ml-1 hover:bg-gray-200 rounded"
+              onClick={(e) => { e.stopPropagation(); toggleRegionExpand(item) }}
+              className="p-1 hover:bg-gray-200 rounded"
+              style={{ marginLeft: `${indent * 20}px` }}
             >
               {isExpanded
                 ? <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
@@ -127,23 +128,34 @@ export function GeographyMultiSelect() {
           )}
           <label
             className="flex items-center py-1.5 cursor-pointer flex-1"
-            style={{ paddingLeft: hasCountries ? '2px' : '28px', paddingRight: '12px' }}
+            style={{ paddingLeft: hasChildren ? '2px' : `${12 + indent * 20}px`, paddingRight: '12px' }}
           >
             <input
               type="checkbox"
-              checked={filters.geographies.includes(region)}
-              onChange={() => handleToggle(region)}
+              checked={filters.geographies.includes(item)}
+              onChange={() => handleToggle(item)}
               className="mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
             />
-            <span className="text-sm text-black font-medium flex-1">{region}</span>
-            {filters.geographies.includes(region) && (
+            <span className={`text-sm text-black ${fontWeight} flex-1`}>{item}</span>
+            {filters.geographies.includes(item) && (
               <Check className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
             )}
           </label>
         </div>
-        {isExpanded && regionCountries.map(country => renderCheckbox(country, 2))}
+        {isExpanded && children.map(child => {
+          const childCountries = subRegionCountries[child] || []
+          if (childCountries.length > 0) {
+            return renderExpandableItem(child, childCountries, indent + 1, 'font-normal')
+          }
+          return renderCheckbox(child, indent + 1)
+        })}
       </div>
     )
+  }
+
+  const renderRegion = (region: string) => {
+    const regionChildren = countries[region] || []
+    return renderExpandableItem(region, regionChildren, 0, 'font-medium')
   }
 
   return (

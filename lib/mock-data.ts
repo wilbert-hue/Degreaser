@@ -32,6 +32,7 @@ export function createMockData(): ComparisonData {
         global: ['Global'],
         regions: [],
         countries: {},
+        subRegionCountries: {},
         all_geographies: ['Global']
       },
       segments: {

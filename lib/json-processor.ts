@@ -1270,6 +1270,7 @@ export async function processJsonDataAsync(
     // This builds a full geography hierarchy: Global > Regions > Countries
     const regionGeographies: string[] = []
     const regionToCountries: Record<string, string[]> = {}
+    const subRegionToCountries: Record<string, string[]> = {}
     const allCountries: string[] = []
     for (const topGeo of geographies) {
       const geoData = structureData[topGeo]
@@ -1286,17 +1287,32 @@ export async function processJsonDataAsync(
             if (!regionGeographies.includes(region) && !geographies.includes(region)) {
               regionGeographies.push(region)
             }
-            // Extract countries under each region (second level keys, excluding the region name itself)
+            // Extract sub-regions/countries under each region (second level)
             const regionData = byRegionData[region]
             if (regionData && typeof regionData === 'object') {
-              const countries = Object.keys(regionData).filter(key => {
+              const subItems = Object.keys(regionData).filter(key => {
                 return key !== region && typeof regionData[key] === 'object' && !Array.isArray(regionData[key])
               })
-              if (countries.length > 0) {
-                regionToCountries[region] = countries
-                countries.forEach(country => {
-                  if (!allCountries.includes(country)) {
-                    allCountries.push(country)
+              if (subItems.length > 0) {
+                regionToCountries[region] = subItems
+                subItems.forEach(subItem => {
+                  if (!allCountries.includes(subItem)) {
+                    allCountries.push(subItem)
+                  }
+                  // Check for third level (countries under sub-regions)
+                  const subItemData = regionData[subItem]
+                  if (subItemData && typeof subItemData === 'object') {
+                    const thirdLevelItems = Object.keys(subItemData).filter(key => {
+                      return key !== subItem && typeof subItemData[key] === 'object' && !Array.isArray(subItemData[key])
+                    })
+                    if (thirdLevelItems.length > 0) {
+                      subRegionToCountries[subItem] = thirdLevelItems
+                      thirdLevelItems.forEach(country => {
+                        if (!allCountries.includes(country)) {
+                          allCountries.push(country)
+                        }
+                      })
+                    }
                   }
                 })
               }
@@ -1364,6 +1380,7 @@ export async function processJsonDataAsync(
       global: filteredGeographies.filter(g => !regionGeographies.includes(g) && !allCountries.includes(g)),
       regions: regionGeographies,
       countries: regionToCountries,
+      subRegionCountries: subRegionToCountries,
       all_geographies: filteredGeographies
     }
 

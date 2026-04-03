@@ -21,6 +21,7 @@ export interface GeographyDimension {
   global: string[];
   regions: string[];
   countries: Record<string, string[]>;
+  subRegionCountries: Record<string, string[]>;
   all_geographies: string[];
 }
 
